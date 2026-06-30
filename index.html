@@ -122,6 +122,45 @@
     }
     .hero.ferme .hero-sub { color: var(--muted); }
 
+    /* Badge transition dans la hero card */
+    .hero-body {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .hero-left { flex: 1; }
+    .hero-transition {
+      background: var(--open);
+      border-radius: 12px;
+      padding: 10px 14px;
+      text-align: center;
+      flex-shrink: 0;
+      min-width: 90px;
+    }
+    .ht-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.7);
+      margin-bottom: 4px;
+    }
+    .ht-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.03em;
+      line-height: 1;
+    }
+    .ht-at {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,.7);
+      margin-top: 3px;
+    }
+
     /* ── TIMELINE ── */
     .timeline-wrap {
       margin: 28px 24px 0;
@@ -295,9 +334,18 @@
 
 <div id="hero" class="hero ferme">
   <p class="hero-eyebrow">En ce moment</p>
-  <div class="hero-status" id="heroStatus">—</div>
-  <div class="hero-mode"   id="heroMode"></div>
-  <div class="hero-sub"    id="heroSub"></div>
+  <div class="hero-body">
+    <div class="hero-left">
+      <div class="hero-status" id="heroStatus">—</div>
+      <div class="hero-mode"   id="heroMode"></div>
+      <div class="hero-sub"    id="heroSub"></div>
+    </div>
+    <div class="hero-transition" id="heroTransition" style="display:none">
+      <div class="ht-label">Open+ dans</div>
+      <div class="ht-value" id="htValue">—</div>
+      <div class="ht-at"    id="htAt"></div>
+    </div>
+  </div>
 </div>
 
 <div class="timeline-wrap">
@@ -314,10 +362,7 @@
   </div>
 </div>
 
-<div id="transitionPill" style="display:none" class="transition-pill">
-  <span class="tp-label">Accès Open+ dans</span>
-  <span class="tp-value" id="tpValue">—</span>
-</div>
+
 
 <div class="schedule-wrap">
   <p class="schedule-title">Cette semaine</p>
@@ -454,14 +499,15 @@ function renderStatus(){
   const opn = statusNow(OPEN[day],  nowM);
   const isOpen = lib.open || opn.open;
 
-  const hero     = document.getElementById('hero');
-  const heroSt   = document.getElementById('heroStatus');
-  const heroMode = document.getElementById('heroMode');
-  const heroSub  = document.getElementById('heroSub');
-  const pill     = document.getElementById('transitionPill');
-  const tpVal    = document.getElementById('tpValue');
+  const hero       = document.getElementById('hero');
+  const heroSt     = document.getElementById('heroStatus');
+  const heroMode   = document.getElementById('heroMode');
+  const heroSub    = document.getElementById('heroSub');
+  const heroTrans  = document.getElementById('heroTransition');
+  const htValue    = document.getElementById('htValue');
+  const htAt       = document.getElementById('htAt');
 
-  pill.style.display = 'none';
+  heroTrans.style.display = 'none';
 
   if(isOpen){
     if(lib.open){
@@ -479,8 +525,9 @@ function renderStatus(){
       const finalClosesIn = lastOpnClose ? lastOpnClose.in  : lib.closesIn;
       heroSub.textContent  = `Ferme à ${finalCloseAt} · dans ${fmtDur(finalClosesIn)}`;
       if(!opn.open && opn.opensIn!=null){
-        pill.style.display='flex';
-        tpVal.textContent = fmtDur(opn.opensIn)+' · à '+opn.openAt;
+        heroTrans.style.display = 'block';
+        htValue.textContent = fmtDur(opn.opensIn);
+        htAt.textContent    = 'à ' + opn.openAt;
       }
     } else {
       hero.className = 'hero ouvert-open';
