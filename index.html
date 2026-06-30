@@ -6,258 +6,240 @@
   <title>Médiathèque — Horaires</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #ffffff;
-      --surface:  #f5f5f3;
-      --border:   #e5e5e2;
-      --libre:    #e8480c;   /* orange vif */
-      --open:     #1a56d6;   /* bleu franc */
-      --closed:   #6b6b6b;
-      --text:     #111111;
-      --muted:    #888884;
-      --libre-bg: #fff3ee;
-      --open-bg:  #eef3ff;
+      --bg:        #f2ede6;
+      --surface:   #ede7de;
+      --ink:       #1c1a17;
+      --muted:     #8c8276;
+      --border:    #d9d2c7;
+      --libre-acc: #c4501a;
+      --open-acc:  #2d5fa6;
     }
 
-    html { background: var(--bg); }
+    html, body { background: var(--bg); }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      color: var(--ink);
       min-height: 100dvh;
       max-width: 430px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      padding-bottom: env(safe-area-inset-bottom, 24px);
     }
 
     /* ── Header ── */
-    header {
-      padding: 36px 20px 24px;
-      border-bottom: 2px solid var(--text);
-    }
-    .header-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
+    header { padding: 40px 22px 20px; }
+    .eyebrow {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
     }
     header h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 32px;
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -.03em;
-      text-transform: uppercase;
+      font-family: 'Playfair Display', serif;
+      font-size: 42px; font-weight: 900;
+      line-height: .95; letter-spacing: -.02em;
     }
-    header h1 span {
-      display: block;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: .04em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 4px;
+    .header-rule { margin-top: 20px; height: 1px; background: var(--ink); }
+    .header-meta {
+      display: flex; justify-content: space-between;
+      align-items: center; padding-top: 10px;
+    }
+    .header-season {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
     }
     .live-clock {
-      font-family: 'Inter', monospace;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      text-align: right;
-      white-space: nowrap;
-      padding-top: 6px;
-      letter-spacing: .04em;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .08em; color: var(--muted);
     }
 
-    /* ── Status cards ── */
-    .status-area {
-      padding: 20px 16px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .status-card {
-      border-radius: 12px;
-      padding: 18px 20px 16px;
-      position: relative;
-      overflow: hidden;
-      border: 2px solid transparent;
-    }
-    .status-card.libre { background: var(--libre-bg); border-color: var(--libre); }
-    .status-card.open  { background: var(--open-bg);  border-color: var(--open);  }
-    .status-card.neutral { background: var(--surface); border-color: var(--border); }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .card-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 10px;
-      border-radius: 99px;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-    .badge-open   { background: var(--libre); color: #fff; }
-    .badge-openp  { background: var(--open);  color: #fff; }
-    .badge-closed { background: var(--text);  color: #fff; }
-    .badge-soon   { background: var(--open-bg); color: var(--open); border: 1px solid var(--open); }
-
-    .card-status-text {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -.02em;
-    }
-    .card-status-text .accent-libre  { color: var(--libre); }
-    .card-status-text .accent-open   { color: var(--open);  }
-    .card-status-text .accent-closed { color: var(--closed);}
-
-    .card-sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-      font-weight: 500;
-    }
-
-    /* ── Schedule ── */
-    .schedule-section {
-      padding: 28px 16px 0;
-    }
-    .section-title {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .schedule-block {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .block-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 16px;
-      border-bottom: 2px solid var(--border);
-    }
-    .block-color {
-      width: 10px; height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    .block-color.libre { background: var(--libre); }
-    .block-color.open  { background: var(--open);  }
-    .block-title {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: -.01em;
-    }
-
-    .day-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 16px;
+    /* ── Status principal ── */
+    .status-main { padding: 28px 22px 0; }
+    .status-block {
+      padding: 22px 0 20px;
+      border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
-    .day-row:last-child { border-bottom: none; }
-    .day-row.today { background: #fff; }
-    .day-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      min-width: 88px;
+    .status-eyebrow {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
     }
-    .day-row.today .day-name { color: var(--text); font-weight: 700; }
-    .today-dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--libre);
-      margin-right: 6px;
-      vertical-align: middle;
+    .status-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px; font-weight: 900;
+      line-height: 1; letter-spacing: -.02em;
+      display: flex; align-items: baseline;
+      gap: 12px; flex-wrap: wrap;
     }
-    .block-color.open ~ .block-title + .day-row.today .today-dot { background: var(--open); }
-    .day-hours {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
+    .status-headline .badge {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 2px;
+      position: relative; top: -4px;
+    }
+    .badge-ouvert { background: var(--ink); color: var(--bg); }
+    .badge-ferme  { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+    .mode-tag {
+      display: inline-flex; align-items: center;
+      gap: 6px; margin-top: 10px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: .06em; text-transform: uppercase;
+    }
+    .mode-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    .status-sub {
+      font-size: 13px; font-weight: 500;
+      color: var(--muted); margin-top: 8px;
+    }
+    .transition-pill {
+      display: inline-flex; align-items: center;
+      gap: 8px; margin-top: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--open-acc);
+      border-radius: 3px; padding: 8px 14px;
+      font-size: 12px; font-weight: 500; color: var(--muted);
+    }
+    .transition-pill strong { color: var(--open-acc); font-weight: 700; }
+
+    /* ── Barre de progression ── */
+    .timeline-wrap { margin-top: 20px; }
+    .timeline-label {
+      display: flex; justify-content: space-between;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .06em; color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .timeline-track {
+      position: relative;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: visible;
+    }
+    .timeline-segment {
+      position: absolute; top: 0; height: 100%;
+    }
+    .timeline-segment.libre { background: var(--libre-acc); }
+    .timeline-segment.open  { background: var(--open-acc); }
+    /* arrondi des extrémités */
+    .timeline-segment.cap-left  { border-radius: 4px 0 0 4px; }
+    .timeline-segment.cap-right { border-radius: 0 4px 4px 0; }
+    .timeline-segment.cap-both  { border-radius: 4px; }
+    .timeline-now {
+      position: absolute; top: -4px;
+      width: 3px; height: 16px;
+      background: var(--ink); border-radius: 2px;
+      transform: translateX(-50%);
+      z-index: 2;
+      box-shadow: 0 0 0 1px var(--bg);
+    }
+    .timeline-times {
+      display: flex; justify-content: space-between;
+      font-size: 9px; font-weight: 500;
+      color: var(--muted); margin-top: 5px;
       font-variant-numeric: tabular-nums;
     }
-    .day-row.today .day-hours { color: var(--text); font-weight: 600; }
-    .day-closed { font-size: 12px; color: var(--border); font-style: italic; }
+    .timeline-legend {
+      display: flex; gap: 14px; margin-top: 10px;
+    }
+    .tl-leg-item {
+      display: flex; align-items: center;
+      gap: 5px; font-size: 10px; font-weight: 600;
+      color: var(--muted); letter-spacing: .04em;
+    }
+    .tl-leg-dot {
+      width: 8px; height: 8px; border-radius: 2px;
+    }
+
+    /* ── Schedule unifié ── */
+    .schedule-section { padding: 32px 22px 0; }
+    .section-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 14px;
+    }
+    .schedule-block { margin-bottom: 8px; }
+    .col-header {
+      display: grid; grid-template-columns: 100px 1fr 1fr;
+      gap: 8px; padding-bottom: 6px;
+      border-bottom: 2px solid var(--ink); margin-bottom: 2px;
+    }
+    .col-header-cell {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .col-header-cell.libre { color: var(--libre-acc); }
+    .col-header-cell.open  { color: var(--open-acc); }
+
+    .day-row {
+      display: grid; grid-template-columns: 100px 1fr 1fr;
+      align-items: center; padding: 9px 0;
+      border-bottom: 1px solid var(--border); gap: 8px;
+    }
+    .day-row:last-child { border-bottom: none; }
+    .day-name { font-size: 13px; font-weight: 400; color: var(--muted); }
+    .day-row.today .day-name { font-weight: 700; color: var(--ink); }
+    .today-marker {
+      display: inline-block; width: 5px; height: 5px;
+      border-radius: 50%; background: var(--ink);
+      margin-right: 7px; vertical-align: middle; position: relative; top: -1px;
+    }
+    .col-hours {
+      font-size: 11px; font-weight: 500;
+      color: var(--muted); font-variant-numeric: tabular-nums;
+    }
+    .day-row.today .col-hours { color: var(--ink); font-weight: 600; }
+    .hours-val { display: block; }
+    .hours-val + .hours-val { margin-top: 2px; }
+    .day-closed { font-size: 11px; color: var(--border); }
 
     footer {
-      margin-top: auto;
-      padding: 24px 16px 28px;
-      text-align: center;
-      font-size: 11px;
-      color: var(--border);
-      line-height: 1.7;
-      letter-spacing: .02em;
+      margin-top: auto; padding: 28px 22px 36px;
+      font-size: 10px; color: var(--border);
+      letter-spacing: .08em; text-transform: uppercase;
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-top">
-    <h1><span>Médiathèque</span>Horaires</h1>
-    <div class="live-clock" id="clock">—</div>
+  <p class="eyebrow">Médiathèque</p>
+  <h1>Horaires</h1>
+  <div class="header-rule"></div>
+  <div class="header-meta">
+    <span class="header-season">Hors vacances d'été</span>
+    <span class="live-clock" id="clock">—</span>
   </div>
 </header>
 
-<div class="status-area" id="statusArea"></div>
+<div class="status-main">
+  <div class="status-block" id="statusBlock"></div>
+</div>
 
 <div class="schedule-section">
-  <p class="section-title">Cette semaine</p>
-  <div class="schedule-block" id="blockLibre">
-    <div class="block-header">
-      <span class="block-color libre"></span>
-      <span class="block-title">Entrée libre</span>
+  <p class="section-label">Cette semaine</p>
+  <div class="schedule-block">
+    <div class="col-header">
+      <span></span>
+      <span class="col-header-cell libre">Entrée libre</span>
+      <span class="col-header-cell open">Open+</span>
     </div>
-    <div id="scheduleLibre"></div>
-  </div>
-  <div class="schedule-block" id="blockOpen">
-    <div class="block-header">
-      <span class="block-color open"></span>
-      <span class="block-title">Accès Open+</span>
-    </div>
-    <div id="scheduleOpen"></div>
+    <div id="scheduleTable"></div>
   </div>
 </div>
 
-<footer>
-  Horaires hors vacances d'été<br>Actualisé toutes les 30 s
-</footer>
+<footer>Actualisé toutes les 30 s</footer>
 
 <script>
-// 0=dim 1=lun 2=mar 3=mer 4=jeu 5=ven 6=sam
 const LIBRE = {
   2: [[10,0,13,0],[14,0,19,0]],
   3: [[10,0,19,0]],
@@ -297,81 +279,190 @@ function statusNow(schedule, now){
   return {open:false};
 }
 
-function renderSchedule(id, schedule, dotColor){
-  const el=document.getElementById(id);
-  const today=new Date().getDay();
+// Calcule les segments pour la barre de progression
+// Plage affichée : 8h–23h (900 min de large)
+const TL_START = mins(8,0);
+const TL_END   = mins(23,0);
+const TL_RANGE = TL_END - TL_START;
+
+function pct(m){ return Math.max(0, Math.min(100, (m - TL_START) / TL_RANGE * 100)); }
+
+function buildTimeline(day, nowM){
+  const libSlots = LIBRE[day] || [];
+  const opnSlots = OPEN[day]  || [];
+  let segments = [];
+
+  // Fusionne les créneaux Libre et Open+ en segments colorés
+  // Priorité : si libre actif → orange ; sinon bleu
+  // On discrétise minute par minute serait lourd, on calcule les transitions
+  // Collecte tous les points de changement
+  let events = [];
+  for(const [hO,mO,hC,mC] of libSlots){
+    events.push({t: mins(hO,mO), type:'lib_start'});
+    events.push({t: mins(hC,mC), type:'lib_end'});
+  }
+  for(const [hO,mO,hC,mC] of opnSlots){
+    events.push({t: mins(hO,mO), type:'opn_start'});
+    events.push({t: mins(hC,mC), type:'opn_end'});
+  }
+  events.sort((a,b)=>a.t-b.t);
+
+  let libOn=false, opnOn=false, segStart=null, segClass=null;
+
+  function flush(t){
+    if(segStart!==null && segClass && t > segStart){
+      segments.push({start:segStart, end:t, cls:segClass});
+    }
+  }
+  function getClass(){ return libOn ? 'libre' : opnOn ? 'open' : null; }
+
+  for(const ev of events){
+    const prev = getClass();
+    if(ev.type==='lib_start') libOn=true;
+    if(ev.type==='lib_end')   libOn=false;
+    if(ev.type==='opn_start') opnOn=true;
+    if(ev.type==='opn_end')   opnOn=false;
+    const next = getClass();
+    if(prev!==next){
+      flush(ev.t);
+      segStart = ev.t;
+      segClass = next;
+    }
+  }
+  flush(TL_END);
+
+  // Détermine les caps arrondis
+  const html = segments.map((seg, i) => {
+    const left  = pct(seg.start);
+    const width = pct(seg.end) - left;
+    const isFirst = i===0 || segments[i-1].end < seg.start - 1;
+    const isLast  = i===segments.length-1 || segments[i+1].start > seg.end + 1;
+    let capClass = isFirst && isLast ? 'cap-both' : isFirst ? 'cap-left' : isLast ? 'cap-right' : '';
+    return `<div class="timeline-segment ${seg.cls} ${capClass}" style="left:${left}%;width:${width}%"></div>`;
+  }).join('');
+
+  const nowPct = pct(nowM);
+  const nowMarker = (nowM >= TL_START && nowM <= TL_END)
+    ? `<div class="timeline-now" style="left:${nowPct}%"></div>`
+    : '';
+
+  const showLibre = libSlots.length > 0;
+  const showOpen  = opnSlots.length > 0;
+  const legend = `<div class="timeline-legend">
+    ${showLibre ? `<div class="tl-leg-item"><span class="tl-leg-dot" style="background:var(--libre-acc)"></span>Entrée libre</div>` : ''}
+    ${showOpen  ? `<div class="tl-leg-item"><span class="tl-leg-dot" style="background:var(--open-acc)"></span>Accès Open+</div>`  : ''}
+  </div>`;
+
+  return `<div class="timeline-wrap">
+    <div class="timeline-label"><span>Aujourd'hui</span></div>
+    <div class="timeline-track">
+      ${html}
+      ${nowMarker}
+    </div>
+    <div class="timeline-times"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>23h</span></div>
+    ${legend}
+  </div>`;
+}
+
+function renderStatus(){
+  const now = new Date();
+  const day = now.getDay();
+  const nowM = now.getHours()*60 + now.getMinutes();
+
+  const lib = statusNow(LIBRE[day], nowM);
+  const opn = statusNow(OPEN[day],  nowM);
+
+  const isOpen = lib.open || opn.open;
+
+  let headline, modeTag='', sub, transitionPill='';
+
+  if(isOpen){
+    headline = `Ouvert <span class="badge badge-ouvert">Ouvert</span>`;
+
+    if(lib.open){
+      const realCloseAt  = opn.open ? opn.closeAt  : lib.closeAt;
+      const realClosesIn = opn.open ? opn.closesIn : lib.closesIn;
+      modeTag = `<div class="mode-tag">
+        <span class="mode-dot" style="background:var(--libre-acc)"></span>
+        <span style="color:var(--libre-acc)">Entrée libre</span>
+      </div>`;
+      sub = `Ferme à ${realCloseAt} · dans ${fmtDur(realClosesIn)}`;
+      if(!opn.open && opn.opensIn != null){
+        transitionPill = `<div class="transition-pill">
+          Accès Open+ dans <strong>${fmtDur(opn.opensIn)}</strong> · à ${opn.openAt}
+        </div>`;
+      }
+    } else {
+      modeTag = `<div class="mode-tag">
+        <span class="mode-dot" style="background:var(--open-acc)"></span>
+        <span style="color:var(--open-acc)">Accès Open+</span>
+      </div>`;
+      sub = `Ferme à ${opn.closeAt} · dans ${fmtDur(opn.closesIn)}`;
+    }
+
+  } else {
+    headline = `Fermé <span class="badge badge-ferme">Fermé</span>`;
+    const nextLib = lib.opensIn != null ? { in: lib.opensIn, at: lib.openAt, type: 'libre' } : null;
+    const nextOpn = opn.opensIn != null ? { in: opn.opensIn, at: opn.openAt, type: 'open'  } : null;
+    const next = nextLib && nextOpn
+      ? (nextLib.in <= nextOpn.in ? nextLib : nextOpn)
+      : (nextLib || nextOpn);
+
+    if(next){
+      const dotColor = next.type === 'libre' ? 'var(--libre-acc)' : 'var(--open-acc)';
+      const label    = next.type === 'libre' ? 'Entrée libre'     : 'Accès Open+';
+      modeTag = `<div class="mode-tag">
+        <span class="mode-dot" style="background:${dotColor}"></span>
+        <span style="color:${dotColor}">${label}</span>
+      </div>`;
+      sub = `Ouvre à ${next.at} · dans ${fmtDur(next.in)}`;
+    } else {
+      sub = 'Aucune ouverture prévue aujourd\'hui';
+    }
+  }
+
+  const timeline = buildTimeline(day, nowM);
+
+  document.getElementById('statusBlock').innerHTML = `
+    <div class="status-eyebrow">En ce moment</div>
+    <div class="status-headline">${headline}</div>
+    ${modeTag}
+    <div class="status-sub">${sub}</div>
+    ${transitionPill}
+    ${timeline}
+  `;
+}
+
+function renderTable(){
+  const el = document.getElementById('scheduleTable');
+  const today = new Date().getDay();
   el.innerHTML = Array.from({length:7},(_,i)=>{
-    const day=(i+1)%7;
-    const isToday=day===today;
-    const slots=schedule[day];
-    const hrs=slots?.map(([hO,mO,hC,mC])=>`${fmtH(hO,mO)}–${fmtH(hC,mC)}`).join(' / ');
+    const day = (i+1)%7;
+    const isToday = day===today;
+    const libSlots = LIBRE[day];
+    const opnSlots = OPEN[day];
+    const libHtml = libSlots
+      ? libSlots.map(([hO,mO,hC,mC])=>`<span class="hours-val">${fmtH(hO,mO)}–${fmtH(hC,mC)}</span>`).join('')
+      : `<span class="day-closed">—</span>`;
+    const opnHtml = opnSlots
+      ? opnSlots.map(([hO,mO,hC,mC])=>`<span class="hours-val">${fmtH(hO,mO)}–${fmtH(hC,mC)}</span>`).join('')
+      : `<span class="day-closed">—</span>`;
+    const marker = isToday ? `<span class="today-marker"></span>` : '';
     return `<div class="day-row${isToday?' today':''}">
-      <span class="day-name">${isToday?`<span class="today-dot" style="background:${dotColor}"></span>`:''}${DAYS[day]}</span>
-      ${hrs?`<span class="day-hours">${hrs}</span>`:`<span class="day-closed">—</span>`}
+      <span class="day-name">${marker}${DAYS[day]}</span>
+      <span class="col-hours">${libHtml}</span>
+      <span class="col-hours">${opnHtml}</span>
     </div>`;
   }).join('');
 }
 
-function renderStatus(){
-  const now=new Date();
-  const day=now.getDay();
-  const nowM=now.getHours()*60+now.getMinutes();
-  const lib=statusNow(LIBRE[day],nowM);
-  const opn=statusNow(OPEN[day],nowM);
-
-  function card(label,status,cls){
-    const isLibre=cls==='libre';
-    let badge,badgeClass,text,sub;
-    if(status.open){
-      badge='Ouvert'; badgeClass=isLibre?'badge-open':'badge-openp';
-      text=`<span class="accent-${isLibre?'libre':'open'}">Ouvert</span> jusqu'à ${status.closeAt}`;
-      sub=`Ferme dans ${fmtDur(status.closesIn)}`;
-    } else if(status.opensIn!=null){
-      badge='Fermé'; badgeClass='badge-closed';
-      text=`<span class="accent-closed">Fermé</span> — ouvre à ${status.openAt}`;
-      sub=`Dans ${fmtDur(status.opensIn)}`;
-    } else {
-      badge='Fermé'; badgeClass='badge-closed';
-      text=`<span class="accent-closed">Fermé</span> aujourd'hui`;
-      sub=isLibre?'Pas d\'entrée libre ce jour':'Pas d\'accès Open+ ce jour';
-    }
-    return `<div class="status-card ${cls}">
-      <div class="card-header">
-        <span class="card-label">${label}</span>
-        <span class="badge ${badgeClass}">${badge}</span>
-      </div>
-      <div class="card-status-text">${text}</div>
-      <div class="card-sub">${sub}</div>
-    </div>`;
-  }
-
-  let transition='';
-  if(lib.open && !opn.open && opn.opensIn!=null){
-    transition=`<div class="status-card neutral">
-      <div class="card-header">
-        <span class="card-label">Transition</span>
-        <span class="badge badge-soon">Bientôt</span>
-      </div>
-      <div class="card-status-text">Open+ dans <span class="accent-open">${fmtDur(opn.opensIn)}</span></div>
-      <div class="card-sub">À ${opn.openAt}, l'accès devient Open+</div>
-    </div>`;
-  }
-
-  document.getElementById('statusArea').innerHTML =
-    card('Entrée libre', lib, 'libre') +
-    card('Accès Open+', opn, 'open') +
-    transition;
-}
-
 function updateClock(){
-  const now=new Date();
-  const h=String(now.getHours()).padStart(2,'0');
-  const m=String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('clock').textContent=`${DAYS[now.getDay()]} ${h}:${m}`;
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    `${DAYS[now.getDay()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 }
 
-renderSchedule('scheduleLibre', LIBRE, '#e8480c');
-renderSchedule('scheduleOpen',  OPEN,  '#1a56d6');
+renderTable();
 renderStatus();
 updateClock();
 setInterval(()=>{ renderStatus(); updateClock(); }, 30000);
