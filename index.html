@@ -468,10 +468,16 @@ function renderStatus(){
       hero.className = 'hero ouvert-libre';
       heroSt.textContent   = 'Ouvert';
       heroMode.textContent = 'Entrée libre';
-      // Fermeture réelle = fin du dernier créneau du jour (lib ou opn)
-      const realCloseAt  = opn.open ? opn.closeAt  : lib.closeAt;
-      const realClosesIn = opn.open ? opn.closesIn : lib.closesIn;
-      heroSub.textContent  = `Ferme à ${realCloseAt} · dans ${fmtDur(realClosesIn)}`;
+      // Fermeture réelle = fin Open+ si présent aujourd'hui (actif ou à venir), sinon fin entrée libre
+      const hasOpnToday = opn.open || opn.opensIn != null;
+      const realCloseAt  = hasOpnToday ? (opn.open ? opn.closeAt  : opn.openAt.replace(/^(\d+)h.*/, (_,h)=>fmtH(22,0))) : lib.closeAt;
+      // On recalcule proprement la vraie fin Open+ du jour
+      const opnSlots = OPEN[day] || [];
+      let lastOpnClose = null;
+      for(const [hO,mO,hC,mC] of opnSlots) lastOpnClose = {at: fmtH(hC,mC), in: mins(hC,mC) - nowM};
+      const finalCloseAt  = lastOpnClose ? lastOpnClose.at  : lib.closeAt;
+      const finalClosesIn = lastOpnClose ? lastOpnClose.in  : lib.closesIn;
+      heroSub.textContent  = `Ferme à ${finalCloseAt} · dans ${fmtDur(finalClosesIn)}`;
       if(!opn.open && opn.opensIn!=null){
         pill.style.display='flex';
         tpVal.textContent = fmtDur(opn.opensIn)+' · à '+opn.openAt;
