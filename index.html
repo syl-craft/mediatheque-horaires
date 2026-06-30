@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Médiathèque — Horaires</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --border:    #2a2d3a;
+      --libre:     #4ade80;  /* vert doux */
+      --open:      #60a5fa;  /* bleu */
+      --closed:    #f87171;  /* rouge */
+      --text:      #e8eaf0;
+      --muted:     #6b7280;
+      --pill-bg:   rgba(255,255,255,0.06);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 24px 20px 0;
+      text-align: center;
+    }
+    .header-eyebrow {
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+    }
+    .live-clock {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Status cards ── */
+    .status-area {
+      padding: 20px 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .3s;
+    }
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+    .status-card.libre::before  { background: var(--libre); }
+    .status-card.open::before   { background: var(--open); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 99px;
+      letter-spacing: .04em;
+    }
+    .badge-open   { background: rgba(74,222,128,.15); color: var(--libre); }
+    .badge-openplus { background: rgba(96,165,250,.15); color: var(--open); }
+    .badge-closed { background: rgba(248,113,113,.12); color: var(--closed); }
+
+    .card-status-text {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -.02em;
+    }
+    .card-status-text span.accent-libre { color: var(--libre); }
+    .card-status-text span.accent-open  { color: var(--open); }
+    .card-status-text span.accent-closed { color: var(--closed); }
+
+    .card-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .countdown-pill {
+      display: inline-block;
+      background: var(--pill-bg);
+      border-radius: 8px;
+      padding: 6px 12px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+    }
+
+    /* ── Schedule section ── */
+    .schedule-section {
+      padding: 24px 16px 0;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .schedule-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .block-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .block-dot.libre { background: var(--libre); }
+    .block-dot.open  { background: var(--open); }
+    .block-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .day-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      transition: background .15s;
+    }
+    .day-row:last-child { border-bottom: none; }
+    .day-row.today {
+      background: rgba(255,255,255,.04);
+    }
+    .day-name {
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 90px;
+    }
+    .day-row.today .day-name {
+      color: var(--text);
+      font-weight: 700;
+    }
+    .day-hours {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .day-row.today .day-hours { color: var(--text); }
+    .day-closed { font-size: 12px; color: var(--muted); font-style: italic; }
+
+    footer {
+      margin-top: auto;
+      padding: 24px 16px 28px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">Médiathèque</p>
+  <h1>Horaires d'ouverture</h1>
+  <p class="live-clock" id="clock">--:--</p>
+</header>
+
+<div class="status-area" id="statusArea">
+  <!-- injected by JS -->
+</div>
+
+<div class="schedule-section">
+  <p class="section-title">Programme de la semaine</p>
+
+  <!-- Entrée libre -->
+  <div class="schedule-block">
+    <div class="block-header">
+      <span class="block-dot libre"></span>
+      <span class="block-title">Entrée libre</span>
+    </div>
+    <div id="scheduleLibre"></div>
+  </div>
+
+  <!-- Open+ -->
+  <div class="schedule-block">
+    <div class="block-header">
+      <span class="block-dot open"></span>
+      <span class="block-title">Accès Open+</span>
+    </div>
+    <div id="scheduleOpen"></div>
+  </div>
+</div>
+
+<footer>
+  Horaires hors vacances d'été<br>
+  Mis à jour automatiquement
+</footer>
+
+<script>
+// ── Données horaires ──────────────────────────────────────────────────────────
+// day: 0=dim, 1=lun, 2=mar, 3=mer, 4=jeu, 5=ven, 6=sam
+// slots: [[hOpen, mOpen, hClose, mClose], ...]
+
+const LIBRE = {
+  2: [[10, 0, 13, 0], [14, 0, 19, 0]], // mardi
+  3: [[10, 0, 19, 0]],                 // mercredi
+  5: [[10, 0, 13, 0], [14, 0, 19, 0]], // vendredi
+  6: [[10, 0, 18, 0]],                 // samedi
+};
+
+const OPEN = {
+  1: [[9,  0, 22, 0]],  // lundi
+  2: [[19, 0, 22, 0]],  // mardi
+  3: [[19, 0, 22, 0]],  // mercredi
+  4: [[12, 0, 22, 0]],  // jeudi
+  5: [[19, 0, 22, 0]],  // vendredi
+  6: [[18, 0, 22, 0]],  // samedi
+  0: [[9,  0, 22, 0]],  // dimanche
+};
+
+const DAY_NAMES = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function toMins(h, m) { return h * 60 + m; }
+function fmtHour(h, m) { return `${h}h${m.toString().padStart(2,'0').replace('00','')}` }
+function fmtDuration(mins) {
+  if (mins <= 0) return '';
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return `${h}h`;
+  return `${h}h${m.toString().padStart(2,'0')}`;
+}
+
+function statusNow(schedule, nowMins) {
+  // returns { open: bool, closesIn?: mins, opensIn?: mins, nextOpen?: string }
+  const slots = schedule || [];
+  for (const [hO, mO, hC, mC] of slots) {
+    const start = toMins(hO, mO);
+    const end   = toMins(hC, mC);
+    if (nowMins >= start && nowMins < end) {
+      return { open: true, closesIn: end - nowMins, closeAt: fmtHour(hC, mC) };
+    }
+  }
+  // find next opening today
+  for (const [hO, mO, hC, mC] of slots) {
+    const start = toMins(hO, mO);
+    if (nowMins < start) {
+      return { open: false, opensIn: start - nowMins, openAt: fmtHour(hO, mO) };
+    }
+  }
+  return { open: false };
+}
+
+// ── Render schedule table ─────────────────────────────────────────────────────
+function renderSchedule(containerId, schedule) {
+  const el = document.getElementById(containerId);
+  const todayDay = new Date().getDay();
+  let html = '';
+  for (let d = 1; d <= 7; d++) {
+    const day = d % 7; // 1=lun…6=sam, then 0=dim
+    const isToday = day === todayDay;
+    const slots = schedule[day];
+    const hoursStr = slots
+      ? slots.map(([hO, mO, hC, mC]) => `${fmtHour(hO,mO)}–${fmtHour(hC,mC)}`).join(' / ')
+      : null;
+    html += `<div class="day-row${isToday ? ' today' : ''}">
+      <span class="day-name">${DAY_NAMES[day]}</span>
+      ${hoursStr
+        ? `<span class="day-hours">${hoursStr}</span>`
+        : `<span class="day-closed">Fermé</span>`}
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+// ── Render status cards ───────────────────────────────────────────────────────
+function renderStatus() {
+  const now = new Date();
+  const day = now.getDay();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  const libreStatus = statusNow(LIBRE[day], nowMins);
+  const openStatus  = statusNow(OPEN[day],  nowMins);
+
+  function buildCard(label, status, colorClass) {
+    let badgeClass, badgeText, statusText, subText, pill = '';
+
+    if (status.open) {
+      badgeClass = colorClass === 'libre' ? 'badge-open' : 'badge-openplus';
+      badgeText = 'Ouvert';
+      const accentClass = colorClass === 'libre' ? 'accent-libre' : 'accent-open';
+      statusText = `<span class="${accentClass}">Ouvert</span> jusqu'à ${status.closeAt}`;
+      subText = `Ferme dans ${fmtDuration(status.closesIn)}`;
+    } else if (status.opensIn != null) {
+      badgeClass = 'badge-closed';
+      badgeText = 'Fermé';
+      statusText = `<span class="accent-closed">Fermé</span> — ouvre à ${status.openAt}`;
+      subText = `Dans ${fmtDuration(status.opensIn)}`;
+    } else {
+      badgeClass = 'badge-closed';
+      badgeText = 'Fermé';
+      statusText = `<span class="accent-closed">Fermé</span> aujourd'hui`;
+      subText = colorClass === 'libre' ? 'Entrée libre non disponible ce jour' : 'Pas d\'accès Open+ ce jour';
+    }
+
+    return `
+      <div class="status-card ${colorClass}">
+        <div class="card-header">
+          <span class="card-label">${label}</span>
+          <span class="badge ${badgeClass}">${badgeText}</span>
+        </div>
+        <div class="card-status-text">${statusText}</div>
+        <div class="card-sub">${subText}</div>
+      </div>`;
+  }
+
+  // Show "transition" info: if libre is open, when does Open+ begin?
+  let transitionCard = '';
+  if (libreStatus.open && !openStatus.open && openStatus.opensIn != null) {
+    transitionCard = `
+      <div class="status-card" style="border-color:#374151">
+        <div class="card-header">
+          <span class="card-label">Transition</span>
+          <span class="badge" style="background:rgba(96,165,250,.1);color:var(--open)">À venir</span>
+        </div>
+        <div class="card-status-text" style="font-size:16px">
+          Accès Open+ dans <span style="color:var(--open)">${fmtDuration(openStatus.opensIn)}</span>
+        </div>
+        <div class="card-sub">à ${openStatus.openAt} l'entrée libre devient Open+</div>
+      </div>`;
+  }
+
+  document.getElementById('statusArea').innerHTML =
+    buildCard('Entrée libre', libreStatus, 'libre') +
+    buildCard('Accès Open+', openStatus, 'open') +
+    transitionCard;
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2, '0');
+  const m = now.getMinutes().toString().padStart(2, '0');
+  document.getElementById('clock').textContent = `${DAY_NAMES[now.getDay()]} ${h}:${m}`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderSchedule('scheduleLibre', LIBRE);
+renderSchedule('scheduleOpen', OPEN);
+renderStatus();
+updateClock();
+setInterval(() => { renderStatus(); updateClock(); }, 30_000);
+</script>
+</body>
+</html>
