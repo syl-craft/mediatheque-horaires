@@ -314,7 +314,16 @@
       color: var(--border);
       letter-spacing: .08em;
       text-transform: uppercase;
+      text-align: center;
     }
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: .04em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1px;
+    }
+    footer a:hover { color: var(--ink); }
   </style>
 </head>
 <body>
@@ -371,7 +380,10 @@
   </table>
 </div>
 
-<footer>Hors vacances d'été · actualisé toutes les 30 s · v1.0.1</footer>
+<footer>
+  Hors vacances d'été · actualisé toutes les 30 s · v1.0.2<br>
+  <a href="https://mediatheques.valparisis.fr/horaires-et-acces/leclipse-cormeilles-en-parisis" target="_blank" rel="noopener">Horaires officiels →</a>
+</footer>
 
 <script>
 const LIBRE = {
